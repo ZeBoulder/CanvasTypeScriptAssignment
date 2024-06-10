@@ -1,0 +1,131 @@
+.tools {
+    width: 100px;
+    float: left;
+    padding: 5px;
+}
+
+.tools li {
+    padding: 5px;
+    list-style: none;
+}
+
+.tools li:hover {
+    color: cornflowerblue;
+    cursor: pointer;
+}
+
+.tools li.marked {
+    background-color: cornflowerblue;
+    color: white;
+}
+
+#drawArea {
+    border:1px solid #000000;
+    background-color: lightgrey;
+}
+
+
+
+/* https://www.youtube.com/watch?v=7Iadn0Rm2T8&list=PLXrtIoYgTeIv-JLEe5u9L-q970kMgcZOV&index=2&t=301s */
+
+*{
+    padding: 0;
+    margin: 0;
+}
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+html{
+    font-size: 16px;
+    font-family: sans-serif;
+    line-height: 1.5;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    box-sizing: border-box;
+}
+body{
+    padding: 1rem;
+}
+h1, h2, p{
+    padding: 1rem 2rem;
+}
+
+#container {
+    /* position: relative;  */
+    width: 500px; 
+    height: 510px;
+}
+
+#drawingArea{
+    position: absolute;
+    border: 1px solid #999;
+    width: 500px;
+    height: 500px;
+}
+
+#coordinatesDisplay{
+    position: absolute; 
+    bottom: 0; 
+    left: 0; 
+    /* background: rgba(255,255,255,0.7);  */
+    /* padding: 5px; */
+}
+
+#coordinatesDisplay{
+    margin-top: 10px;
+}
+
+#verticalLine, #horizontalLine {
+    background-color: black;
+}
+
+#verticalLine {
+    position: absolute;
+    width: 1px;
+    height: 100%;
+}
+
+#horizontalLine {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+}
+
+#tableLog{
+    position: relative;
+    list-style-type: none; 
+    padding: 1000; 
+}
+
+
+.menu{
+    width: 12rem;
+    /* height: 4.5rem; */
+    background-color: #f4f4f4;
+    color: #333;
+    border: 1px solid #aaa;
+    box-shadow: 2px 2px 2px #999;
+    border-radius: 0.2rem;
+    list-style: none;
+    position: fixed;
+    z-index: 1000;
+}
+.menu.off{
+    top: -200%;
+    left: -200%;
+}
+.menu-item{
+    /* height: 1.5rem; */
+    line-height: 1.5rem;
+    font-size: 1rem;
+    font-weight: 100;
+    padding: 0 1rem;
+    cursor: pointer;
+}
+.menu-item:hover,
+.menu-item:active{
+    color: #000;
+    font-weight: 500;
+}

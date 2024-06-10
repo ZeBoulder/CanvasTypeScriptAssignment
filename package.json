@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "axios": "^0.27.2",
+    "typescript": "^5.4.5"
+  },
+
+  "scripts": {
+		"start": "npx live-server --port=3001 -q",
+		"build": "npx tsc -p . --outDir ./outDir",
+		"build:watch": "npx tsc -p . --outDir ./outDir -w",
+		"format": "npx prettier . --write && echo All files formatted in prettier style format!",
+		"lint": "npx eslint --ext .ts,.html . && echo Checked esLint, will check prettier code style now... && prettier . --check"
+	}
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Zeichenpogramm</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+
+    <script src="outDir/types.js" type="module"></script>
+    <script src="outDir/Shapes.js" type="module"></script>
+    <script src="outDir/ToolArea.js" type="module"></script>
+    <script src="outDir/Canvas.js" type="module"></script>
+    <script src="outDir/init.js" type="module"></script>
+
+    
+    <style>
+        #drawArea {
+            float: left;
+        }
+        #textFieldTimeMachine {
+            position: relative;
+            width: 400px;  /* Adjust as needed */
+            height: 500px;  /* Adjust as needed */
+            overflow: auto;
+            left: 20px;
+        }
+        #myButton {
+            position: relative;
+            display: block;
+            width: 100px;  /* Adjust as needed */
+            height: 50px;  /* Adjust as needed */
+            margin-top: 10px;  /* Adjust as needed */
+            left: 20px;
+        }
+    </style>
+
+    <body>
+
+<h1>Zeichenprogramm</h1>
+
+<p>Wählen Sie auf der linken Seite Ihr Zeichwerkzeug aus.
+Haben Sie eines ausgewählt, können Sie mit der Maus
+die entsprechenden Figuren zeichen. Typischerweise, indem
+Sie die Maus drücken, dann mit gedrückter Maustaste die
+Form bestimmen, und dann anschließend die Maustaste loslassen.
+</p>
+
+<ul class="tools"></ul>
+
+<canvas id="drawArea" width="700" height="600"></canvas>
+
+<div id="rightSide">
+    <textarea type="text" id="textFieldTimeMachine"></textarea>
+</div>
+<div>
+<button id="myButton">Click me</button>
+</div>
+
+</body>
+</html>
