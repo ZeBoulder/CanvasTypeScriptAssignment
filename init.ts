@@ -17,6 +17,7 @@ init();
 
 
 // TESTY
+// Testy 2
 
 function setupCanvas() {
   const canvasDomElm = document.getElementById("drawArea") as HTMLCanvasElement;
