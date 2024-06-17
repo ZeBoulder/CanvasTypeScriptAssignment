@@ -5,6 +5,8 @@ export class Canvas {
         this.shapes = {};
         this.shapesOrder = [];
         this.multiSelectedArray = [];
+        //TODO: dirty code - fix this once a Service Infrastructure is Created
+        this.globalEventDispatcher = window.theBestEventDispatcherEver;
         this.shapes = {};
         this.shapesOrder = [];
         this.multiSelectedArray = [];
@@ -60,7 +62,7 @@ export class Canvas {
         //     // this.shapesOrder = [];
         //     // this.multiSelectedArray = [];
         //     // this.eventLogString = "";
-        //     this.applyEvents(events);
+        //     this.globalEventDispatcher.applyEvents(events);
         // });
         function createMouseHandler(methodName) {
             return function (e) {
@@ -305,7 +307,8 @@ export class Canvas {
         }
         // Trigger the ShapesDeleted event
         if (shapeIdsToDelete.length > 0) {
-            this.applyEvents([new ShapesDeleted(shapeIdsToDelete)]);
+            // this.applyEvents([new ShapesDeleted(shapeIdsToDelete)]);
+            this.globalEventDispatcher.applyEvents([new ShapesDeleted(shapeIdsToDelete)]);
         }
     }
     deleteShapesByIds(shapeIds, redraw) {
@@ -354,7 +357,7 @@ export class Canvas {
         return -1; // All shapes are marked
     }
     triggerShapeSelectionEvent(shapeId) {
-        this.applyEvents([new ShapeSelected(shapeId)]);
+        this.globalEventDispatcher.applyEvents([new ShapeSelected(shapeId)]);
     }
     shapeSelect(shapeId, shapes) {
         for (let key in shapes) {
@@ -370,7 +373,7 @@ export class Canvas {
         return this;
     }
     triggerShapeUnselectionEvent(shapeId) {
-        this.applyEvents([new ShapeUnselected(shapeId)]);
+        this.globalEventDispatcher.applyEvents([new ShapeUnselected(shapeId)]);
     }
     shapeUnselect(shapeId, shapes) {
         for (let key in shapes) {
@@ -505,7 +508,7 @@ export class Canvas {
         }
     }
     triggerMoveShape(shapeId, dx, dy) {
-        this.applyEvents([new ShapeMoved(shapeId, dx, dy)]);
+        this.globalEventDispatcher.applyEvents([new ShapeMoved(shapeId, dx, dy)]);
         // const shape = this.shapes[shapeId];
         //     shape.move(dx, dy);
     }

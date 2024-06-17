@@ -6,7 +6,6 @@ import { Canvas } from "./Canvas.js";
 import { TextAreaView } from "./TextAreaView.js"
 
 function init() {
-  var canvas;
 
     document.addEventListener("DOMContentLoaded", function() {
         setupCanvas();
@@ -36,7 +35,9 @@ function setupCanvas() {
   populatedDiv.appendChild(button);
 
   let eventDispatcher = new EventDispatcher();
+  (window as any).theBestEventDispatcherEver = eventDispatcher;
   let canvas;
+  let context;
 
   const sm = {
       addShape(s, rd) {
@@ -70,7 +71,8 @@ function setupCanvas() {
   ];
   const toolArea = new ToolArea(shapesSelector, menu[0]);
   canvas = new Canvas(canvasDomElm, toolArea);
-  setupMenu(canvas);
+  context = {canvas, eventDispatcher}
+  setupMenu(context);
 
   const textAreaView = new TextAreaView(document.getElementById("textFieldTimeMachine") as HTMLTextAreaElement);
   eventDispatcher.addView(canvas);
@@ -95,7 +97,8 @@ function setupCanvas() {
 
 // Set Up menu
 
-function setupMenu(canvas) {
+function setupMenu({canvas, eventDispatcher}) {
+  let context = {canvas, eventDispatcher};
   // create Delete Selected Menu Item
   const deleteSelectedItems = new MenuItem("Delete Selected", (menu) => {
       canvas.deleteSelectedShapes(canvas.multiSelectedArray, true);
@@ -107,7 +110,7 @@ function setupMenu(canvas) {
   const moveItemsToFront = new MenuItem("Move to Front", (menu) => {
     // moveMarkedShapesToFront(canvas);
     // canvas.reorderMarkedShapesToBack();
-    triggerReorderShapesToFront(canvas);
+    triggerReorderShapesToFront();
     menu.hideMenu();
   });
 
@@ -115,79 +118,79 @@ function setupMenu(canvas) {
   const moveItemsToBack = new MenuItem("Move to Back", (menu) => {
     // moveMarkedShapesToBack(canvas);
     // canvas.reorderMarkedShapesToBack();
-    triggerReorderShapesToBack(canvas);
+    triggerReorderShapesToBack();
     menu.hideMenu();
   });
 
-  function triggerReorderShapesToFront(canvas: Canvas) {
+  function triggerReorderShapesToFront() {
     const markedShapes = canvas.getShapesOrder().filter(id => canvas.getShapeById(id)?.marked);
     const unmarkedShapes = canvas.getShapesOrder().filter(id => !canvas.getShapeById(id)?.marked);
     const newOrder = [...unmarkedShapes, ...markedShapes];
-    canvas.applyEvents([new ShapesReorderedToFront(newOrder)]);
+    eventDispatcher.applyEvents([new ShapesReorderedToFront(newOrder)]);
 }
 
-function triggerReorderShapesToBack(canvas: Canvas) {
+function triggerReorderShapesToBack() {
     const markedShapes = canvas.getShapesOrder().filter(id => canvas.getShapeById(id)?.marked);
     const unmarkedShapes = canvas.getShapesOrder().filter(id => !canvas.getShapeById(id)?.marked);
     const newOrder = [...markedShapes, ...unmarkedShapes];
-    canvas.applyEvents([new ShapesReorderedToBack(newOrder)]);
+    eventDispatcher.applyEvents([new ShapesReorderedToBack(newOrder)]);
 }
 
   //Set Up Radio Button Options with respective functions
   let fillColorOptions = {
     Transparent: {
       label: " Transparent",
-      action: () => setColorForShapes(canvas, "#00000000"),
+      action: () => setColorForShapes(context, "#00000000"),
     },
 
     Red: {
       label: " Red",
-      action: () => setColorForShapes(canvas, "#ff0000"),
+      action: () => setColorForShapes(context, "#ff0000"),
     },
     Green: {
       label: " Green",
-      action: () => setColorForShapes(canvas, "#00ff00"),
+      action: () => setColorForShapes(context, "#00ff00"),
     },
 
     Yellow: {
       label: " Yellow",
-      action: () => setColorForShapes(canvas, "#ffff00"),
+      action: () => setColorForShapes(context, "#ffff00"),
     },
 
     Blue: {
       label: " Blue",
-      action: () => setColorForShapes(canvas, "#0000ff"),
+      action: () => setColorForShapes(context, "#0000ff"),
     },
 
     Black: {
       label: " Black",
-      action: () => setColorForShapes(canvas, "#000000"),
+      action: () => setColorForShapes(context, "#000000"),
     },
   };
 
   let outlineColorOptions = {
     Red: {
       label: " Red",
-      action: () => setOutlineColorForShapes(canvas, "#ff0000"),
+      action: () => setOutlineColorForShapes(context, "#ff0000"),
     },
     Green: {
       label: " Green",
-      action: () => setOutlineColorForShapes(canvas, "#00ff00"),
+      action: () => setOutlineColorForShapes(context, "#00ff00"),
     },
 
     Yellow: {
       label: " Yellow",
-      action: () => setOutlineColorForShapes(canvas, "#ffff00"),
+      action: () => setOutlineColorForShapes(context, "#ffff00"),
     },
 
     Blue: {
       label: " Blue",
-      action: () => setOutlineColorForShapes(canvas, "#0000ff"),
+      action: () => setOutlineColorForShapes(context, "#0000ff"),
     },
 
     Black: {
       label: " Black",
-      action: () => setOutlineColorForShapes(canvas, "#000000"),
+      action: () => setOutlineColorForShapes(context, "#000000"),
     },
   };
 
@@ -196,14 +199,14 @@ function triggerReorderShapesToBack(canvas: Canvas) {
     "Set Fill Color",
     fillColorOptions,
     (color) => {
-      setColorForShapes(canvas, color);
+      setColorForShapes(context, color);
     }
   );
   let setShapeOutlineColor = new RadioMenuItem(
     "Set Outline Color",
     outlineColorOptions,
     (color) => {
-      setOutlineColorForShapes(canvas, color);
+      setOutlineColorForShapes(context, color);
     }
   );
 
@@ -229,7 +232,7 @@ function triggerReorderShapesToBack(canvas: Canvas) {
 }
 
 // creating functions that are used by Radio Buttons
-function setColorForShapes(canvas, color) {
+function setColorForShapes({canvas, eventDispatcher}, color) {
   if (!canvas) {
     console.error('Canvas is not defined');
     return;
@@ -249,7 +252,7 @@ function setColorForShapes(canvas, color) {
           }, current color: ${shape.fillColor}`
         );
         // shape.fillColor = color;
-        triggerChangeShapeFillColor(canvas, shape.id, color);       
+        triggerChangeShapeFillColor({eventDispatcher}, shape.id, color);       
         console.log(
           `New color for shape ${shapeIndex + 1}: ${shape.fillColor}`
         );
@@ -259,11 +262,11 @@ function setColorForShapes(canvas, color) {
   canvas.draw();
 }
 
-function triggerChangeShapeFillColor(canvas: Canvas, id:number, color: string){
-  canvas.applyEvents([new ShapeSetFillColor(id, color)])
+function triggerChangeShapeFillColor({eventDispatcher}, id:number, color: string){
+  eventDispatcher.applyEvents([new ShapeSetFillColor(id, color)])
 }
 
-function setOutlineColorForShapes(canvas, color) {
+function setOutlineColorForShapes({canvas, eventDispatcher}, color) {
   console.log("setOutlineColorForShapes called with color:", color);
   console.log(
     "Number of subarrays in multiSelectedArray:",
@@ -279,7 +282,7 @@ function setOutlineColorForShapes(canvas, color) {
           }, current color: ${shape.outlineColor}`
         );
         // shape.outlineColor = color;
-        triggerChangeShapeOutlineColor(canvas, shape.id, color);       
+        triggerChangeShapeOutlineColor({eventDispatcher}, shape.id, color);       
 
         console.log(
           `New color for shape ${shapeIndex + 1}: ${shape.outlineColor}`
@@ -290,7 +293,7 @@ function setOutlineColorForShapes(canvas, color) {
   canvas.draw();
 }
 
-function triggerChangeShapeOutlineColor(canvas: Canvas, id:number, color: string){
-  canvas.applyEvents([new ShapeSetOutlineColor(id, color)])
+function triggerChangeShapeOutlineColor({eventDispatcher}: {eventDispatcher: EventDispatcher}, id:number, color: string){
+  eventDispatcher.applyEvents([new ShapeSetOutlineColor(id, color)])
 }
 

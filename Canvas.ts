@@ -14,7 +14,8 @@ import {
   ShapesDeleted,
   ShapesReorderedToFront,
   ShapesReorderedToBack, 
-  ShapeMoved
+  ShapeMoved,
+  EventDispatcher
 } from "./types.js";
 import { ToolArea } from "./ToolArea.js";
 import { Line, Rectangle, Circle, Triangle } from "./Shapes.js";
@@ -28,9 +29,12 @@ export class Canvas implements ShapeView {
   private height: number;
   private altPressed: boolean;
   private ctrlPressed: boolean;
+  private readonly globalEventDispatcher: EventDispatcher;
   // private eventLogString: string;
 
   constructor(canvasDomElement: HTMLCanvasElement, toolarea: ToolArea) {
+    //TODO: dirty code - fix this once a Service Infrastructure is Created
+    this.globalEventDispatcher = (window as any).theBestEventDispatcherEver;
     this.shapes = {};
     this.shapesOrder = [];
     this.multiSelectedArray = [];
@@ -105,7 +109,7 @@ export class Canvas implements ShapeView {
   //     // this.multiSelectedArray = [];
   //     // this.eventLogString = "";
 
-  //     this.applyEvents(events);
+  //     this.globalEventDispatcher.applyEvents(events);
   // });
 
     function createMouseHandler(methodName: string) {
@@ -379,7 +383,9 @@ parseEventLog(log: string): ShapeEvent[] {
 
     // Trigger the ShapesDeleted event
     if (shapeIdsToDelete.length > 0) {
-        this.applyEvents([new ShapesDeleted(shapeIdsToDelete)]);
+        // this.applyEvents([new ShapesDeleted(shapeIdsToDelete)]);
+        this.globalEventDispatcher.applyEvents([new ShapesDeleted(shapeIdsToDelete)]);
+
     }
 }
 
@@ -448,7 +454,7 @@ private deleteShapesByIds(shapeIds: number[], redraw: boolean): void {
   }
 
   triggerShapeSelectionEvent(shapeId: number) {
-    this.applyEvents([new ShapeSelected(shapeId)]);
+    this.globalEventDispatcher.applyEvents([new ShapeSelected(shapeId)]);
   }
 
   shapeSelect(shapeId: number, shapes: { [p: number]: Shape }): this {
@@ -466,7 +472,7 @@ private deleteShapesByIds(shapeIds: number[], redraw: boolean): void {
   }
 
   triggerShapeUnselectionEvent(shapeId: number) {
-    this.applyEvents([new ShapeUnselected(shapeId)]);
+    this.globalEventDispatcher.applyEvents([new ShapeUnselected(shapeId)]);
   }
 
   shapeUnselect(shapeId: number, shapes: { [p: number]: Shape }): this {
@@ -624,7 +630,7 @@ private deleteShapesByIds(shapeIds: number[], redraw: boolean): void {
   }
 
   triggerMoveShape(shapeId: number, dx: number, dy: number) {
-    this.applyEvents([new ShapeMoved(shapeId, dx, dy)]);
+    this.globalEventDispatcher.applyEvents([new ShapeMoved(shapeId, dx, dy)]);
     // const shape = this.shapes[shapeId];
     //     shape.move(dx, dy);
   }
