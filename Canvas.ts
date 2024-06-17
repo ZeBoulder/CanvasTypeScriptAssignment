@@ -138,6 +138,7 @@ export class Canvas implements ShapeView {
     this.ctx.fillStyle = "lightgrey";
     this.ctx.fillRect(0, 0, this.width, this.height);
     this.ctx.stroke();
+    console.log(this.shapes)
 
     this.ctx.fillStyle = "black";
     for (let id in this.shapesOrder) {
@@ -158,7 +159,7 @@ export class Canvas implements ShapeView {
         console.log(e);
         if (e.type === ShapeEventType.ShapeAdded) {
             const eAdd = e as ShapeAdded;
-            const shape = iShapeToShape(eAdd.shape);
+            const shape = iShapeToShape(JSON.parse(JSON.stringify(eAdd.shape)));
             this.addShape(shape, false); // TODO: redraw
             //this.eventLogString += `{"type": "ShapeAdded", "event": ${JSON.stringify(eAdd)}}\n`;
         } else if (e.type === ShapeEventType.ShapeRemoved) {
@@ -281,14 +282,20 @@ export class Canvas implements ShapeView {
 // }
 
 parseEventLog(log: string): ShapeEvent[] {
+  if (!log.trim()){
+    console.log("Log is empty, returning empty array.");
+    return []; 
+  }
+  
   const events: ShapeEvent[] = [];
-  const lines = log.trim().split('\n');
-
-  lines.forEach(line => {
+  // const lines = log.trim().split('\n');
+  const eventObjs = JSON.parse(log)
+  console.log("Numebr of Events: ", eventObjs.length)
+  eventObjs.forEach(event => {
       try {
-          const parsed = JSON.parse(line);
-          const eventType = parsed.type;
-          const eventData = parsed.event;
+          // const parsed = JSON.parse(line);
+          const eventType = event.type;
+          const eventData = event;
 
           switch (eventType) {
               case ShapeEventType.ShapeAdded:
@@ -325,7 +332,7 @@ parseEventLog(log: string): ShapeEvent[] {
                   console.error(`Unknown event type: ${eventType}`);
           }
       } catch (error) {
-          console.error(`Failed to parse line: ${line}`);
+          // console.error(`Failed to parse line: ${line}`);
           console.error(error);
       }
   });

@@ -86,9 +86,12 @@ function setupCanvas() {
 
       // Clear the variables
       canvas.clearCanvas();
-      canvas.applyEvents(events);
+      textAreaView.clearLog();
+      eventDispatcher.applyEvents(events);
       canvas.draw();
   });
+
+
 }
 
 

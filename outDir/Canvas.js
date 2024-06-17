@@ -85,6 +85,7 @@ export class Canvas {
         this.ctx.fillStyle = "lightgrey";
         this.ctx.fillRect(0, 0, this.width, this.height);
         this.ctx.stroke();
+        console.log(this.shapes);
         this.ctx.fillStyle = "black";
         for (let id in this.shapesOrder) {
             this.shapesOrder[id].draw(this.ctx);
@@ -101,7 +102,7 @@ export class Canvas {
             console.log(e);
             if (e.type === ShapeEventType.ShapeAdded) {
                 const eAdd = e;
-                const shape = iShapeToShape(eAdd.shape);
+                const shape = iShapeToShape(JSON.parse(JSON.stringify(eAdd.shape)));
                 this.addShape(shape, false); // TODO: redraw
                 //this.eventLogString += `{"type": "ShapeAdded", "event": ${JSON.stringify(eAdd)}}\n`;
             }
@@ -223,13 +224,19 @@ export class Canvas {
     //   return events;
     // }
     parseEventLog(log) {
+        if (!log.trim()) {
+            console.log("Log is empty, returning empty array.");
+            return [];
+        }
         const events = [];
-        const lines = log.trim().split('\n');
-        lines.forEach(line => {
+        // const lines = log.trim().split('\n');
+        const eventObjs = JSON.parse(log);
+        console.log("Numebr of Events: ", eventObjs.length);
+        eventObjs.forEach(event => {
             try {
-                const parsed = JSON.parse(line);
-                const eventType = parsed.type;
-                const eventData = parsed.event;
+                // const parsed = JSON.parse(line);
+                const eventType = event.type;
+                const eventData = event;
                 switch (eventType) {
                     case ShapeEventType.ShapeAdded:
                         events.push(new ShapeAdded(eventData.shape));
@@ -266,7 +273,7 @@ export class Canvas {
                 }
             }
             catch (error) {
-                console.error(`Failed to parse line: ${line}`);
+                // console.error(`Failed to parse line: ${line}`);
                 console.error(error);
             }
         });
